@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<!-- 
+//		CarMaker maker = new KiaMaker(); // 객체 생성
+		CarMaker maker = new HyundaiMaker(); // 객체 생성
+		
+		OrderManager manager = new OrderManager(); // 객체 생성
+		manager.setMaker(maker); // DI: 의존 관계 설정
+		manager.order(); // 필요한 시점에 로직을 실행 : 스프링 프레임워크가 판단하지 못합니다.
+ -->
+
+	<bean id="kiaMaker" class="com.example.demo.ioc3.KiaMaker"></bean>
+	<bean id="hyundaiMaker" class="com.example.demo.ioc3.HyundaiMaker"></bean>
+	
+	<bean id="manager" class="com.example.demo.ioc3.OrderManager">
+		<!-- 
+			setMaker 세터메소드를 사용하여 빈 아이디 hyundaiMaker가 가리키는 객체를 DI 합니다.
+			세터메소드를 사용하지만 설정은 name="maker" 방식처럼 멤버변수를 사용합니다.
+		 -->
+		<!-- <property name="maker" ref="hyundaiMaker"></property> -->
+		
+		<constructor-arg ref="kiaMaker"></constructor-arg>
+	</bean>
+
+</beans>
