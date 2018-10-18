@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+<!-- 
+	Advice advice = new MyAdvice();
+	
+	AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
+	pointcut.setExpression("execution(* one*(..))");
+	
+	Advisor advisor = new DefaultPointcutAdvisor(pointcut, advice);
+ -->
+
+	<bean id="advice" 
+		class="com.example.demo.pointcut1.proxyfactorybean.MyAdvice"></bean>
+	
+	<bean id="pointcut" 
+		class="org.springframework.aop.aspectj.AspectJExpressionPointcut">
+		<property name="expression" value="execution(* one*(..))"></property>
+	</bean>
+
+	<bean id="advisor" 
+		class="org.springframework.aop.support.DefaultPointcutAdvisor">
+		<constructor-arg ref="pointcut"></constructor-arg>
+		<constructor-arg ref="advice"></constructor-arg>
+	</bean>
+	
+<!-- 
+	ProxyFactory factory = new ProxyFactory();
+	factory.setTarget(new First());
+	factory.addAdvisor(advisor);
+	
+	First f = (First) factory.getProxy();
+ -->
+	
+	<bean id="first" 
+		class="com.example.demo.pointcut1.proxyfactorybean.First"></bean>
+	
+	<!-- 
+		ProxyFactoryBean은 자신이 빈컨테이너에 등록되는 것이 아니라
+		first 객체를 프록싱하는 프록시객체를 등록합니다. 
+		따라서, id는 proxyFirst 라고 부르는 것이 적절하다 하겠습니다.
+	 -->
+	<bean id="proxyFirst" 
+		class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="target" ref="first"></property>
+		<property name="interceptorNames">
+			<list>
+				<value>advisor</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 
+		ProxyFactoryBean 설정은 1회용입니다. 100개 타겟 객체를 프록싱하는 프록시 객체를
+		만들기 위해서 위 설정이 100번 반복되어야 합니다. 이는 매우 번거로운 작업입니다.
+		그래서 스프링은 단 한번의 설정으로 다수의 프록시 객체를 사용할 수 있도록 설정할 수 있는 
+		aop 네임스페이스 태그를 지원합니다.
+	 -->
+		
+</beans>
+
+
+
+
+
+

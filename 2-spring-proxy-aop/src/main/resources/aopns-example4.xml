@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:component-scan base-package="com.example.demo.pointcut1.aopanno"/>
+
+	<!-- AOP 설정을 애노테이션으로 한다고 통보합니다. 항상 CGLIB 방식의 프록시를 사용하라고 설정합니다. -->
+	<aop:aspectj-autoproxy proxy-target-class="true"/>
+
+	<!-- 
+	<aop:config proxy-target-class="true">
+		<aop:pointcut expression="execution(* two(..))" id="pointcut"/>
+		
+		<aop:aspect ref="myAspect">
+			<aop:before method="myBefore" pointcut="execution(* add(..))"/>
+			<aop:around method="myAround" pointcut-ref="pointcut"/>
+			<aop:after-returning method="myAfterReturning" pointcut="execution(* divide(..))" returning="result"/>
+			<aop:after-throwing method="myAfterThrowing" pointcut="execution(* divide(..))" throwing="error"/>
+			<aop:after method="myAfter" pointcut-ref="pointcut"/>
+		</aop:aspect>
+	</aop:config>
+	 -->
+
+</beans>
+
+
+
+
+
+
