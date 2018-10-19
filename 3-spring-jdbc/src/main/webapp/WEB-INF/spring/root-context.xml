@@ -2,21 +2,78 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 	
 	<!-- Root Context: defines shared resources visible to all other web components -->
 
 	<bean id="dataSource" 
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="url" value="jdbc:oracle:thin:@192.168.0.27:1521:topcredu"/>
-		<property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
-		<property name="username" value="scott"/>
-		<property name="password" value="tiger"/>
+		<property name="url" value="${jdbc.url}"/>
+		<property name="driverClassName" value="${jdbc.driverClassName}"/>
+		<property name="username" value="${jdbc.username}"/>
+		<property name="password" value="${jdbc.password}"/>
 	</bean>
+	
+	<context:property-placeholder location="classpath:jdbc.properties"/>
 	
 	<!-- <bean id="empDao" class="com.example.demo.dao.EmpDaoImpl"></bean> -->
 	
 	<context:component-scan base-package="com.example.demo"/>
+	
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<constructor-arg ref="dataSource"/>
+	</bean>
+	
+	<!-- 
+		어드바이스 클래스를 만드는 대신 어드바이스 객체를 위한 설정을 한다.
+		트랜잭션 로직은 누가 짜도 똑같은 전형적인 로직이므로 로직은 알려줄 필요가 없다.
+		대신, DAO 메소드마다 어떻게 트랜잭션 속성을 적용할 것인지를 설정한다.
+	 -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<!-- 
+				조회는 테이블의 칼럼의 상태를 변화시키지 않는다.
+				read-only="true" 설정으로 격리시간을 최소화 하는 것이 좋다.
+			 -->
+			<tx:method name="find*" isolation="DEFAULT" propagation="REQUIRED"/>
+			<tx:method name="select*" read-only="false" timeout="-1"/>
+			<!-- 
+				위에서 설정한 속성은 모두 기본값이다.
+			 -->
+			<tx:method name="get*" read-only="true"/>
+			<tx:method name="search*" timeout="30"/>
+			
+			<!-- 
+				입력, 수정, 삭제는 테이블의 칼럼의 상태를 변화시킨다.
+				트랜잭션 범위안에서 RuntimeException(언체크드 예외)이 발생하면 롤백한다.
+				트랜잭션 범위안에서 Exception(체크드 예외)이 발생하면 커밋한다.
+				rollback-for="RuntimeException" 설정은 기본값이다.
+				rollback-for="Exception" 설정을 하게되면 
+				Exception(체크드 예외)이 발생해도 롤백한다.
+			 -->
+			<tx:method name="insert*" rollback-for="Exception"/>
+			<tx:method name="update*" rollback-for="RuntimeException"/>
+			<tx:method name="delete*"/>
+			
+		</tx:attributes>
+	</tx:advice>
+	
+	<aop:config>
+		<aop:advisor advice-ref="txAdvice" 
+			pointcut="execution(* com.example.demo.dao..*(..))"/>
+	</aop:config>
+	
+	<bean id="transactionManager" 
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	
+	<!-- @Transactional 사용 -->
+	<tx:annotation-driven proxy-target-class="true"/>
 
 </beans>

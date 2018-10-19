@@ -2,7 +2,7 @@ package com.example.demo.dao;
 
 import java.util.List;
 
-import com.example.demo.model.Emp;
+import com.example.demo.domain.Emp;
 
 public interface EmpDao {
 	// Create Read Update Delete
