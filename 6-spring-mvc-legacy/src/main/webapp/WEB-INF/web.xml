@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	<!-- 서블릿 전역 파라미터 contextConfigLocation 키 값으로 /WEB-INF/spring/root-context.xml 
+		문자열을 보내면 XML을 처리하여 스프링 빈 컨테이너를 구성합니다. -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			/WEB-INF/spring/root-context.xml
+			/WEB-INF/spring/root-context2.xml
+		</param-value>
+	</context-param>
+
+	<!-- WAS 이벤트 리스너 웹서버가 기동할 때 ContextLoaderListener의 로직이 처리됩니다. 이 때, root-context.xml을 
+		로드하여 빈 컨테이너를 구성합니다. -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+	<servlet>
+		<servlet-name>appServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<!-- contextConfigLocation 이란 키로 /WEB-INF/spring/appServlet/servlet-context.xml 
+			문자열을 DispatcherServlet 클래스에게 파라미터로 전달합니다. servlet-context.xml 요청에 따라 서블릿 
+			레벨에 컨테이너를 구성합니다. -->
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>
+				/WEB-INF/spring/appServlet/servlet-context.xml
+			</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>appServlet</servlet-name>
+		<!-- Fall-back URL Handler: 앞에서 누군가가 처리하지 않으면 마지막으로 처리한다. /* : 전처리, 모든 
+			URL을 처리한다. / : 후처리, 모든 URL을 처리한다. DS 브라우저에 요청을 받음 ==> HM 에게 문의 ==> 어느 컨트롤러의 
+			어느 메소드로 연동하라고 통보 -->
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>xxx</servlet-name>
+		<servlet-class>com.example.demo.HomeServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>xxx</servlet-name>
+		<url-pattern>/home.do</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>yyy</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>
+				/WEB-INF/spring/appServlet/servlet-context2.xml
+			</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>yyy</servlet-name>
+		<url-pattern>*.nhn</url-pattern>
+	</servlet-mapping>
+
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+
+</web-app>

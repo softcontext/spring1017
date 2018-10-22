@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title></title>
+</head>
+<body>
+	
+	<h3>JS &lt;==JSON==&gt; @RestController</h3>
+	
+	<button id="btn">Get</button>
+	<div id="target"></div>
+	<button id="btnPost">Post</button>
+	
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script type="text/javascript">
+		let btn = document.getElementById("btn");
+		let btnPost = document.getElementById("btnPost");
+		let target = document.getElementById("target");
+		
+		btn.addEventListener("click", function (){
+			axios.get('employees')
+				.then(function (response) {
+				  // handle success
+				  console.log(response);
+				  let data = response.data;
+				  target.innerText = JSON.stringify(data);
+				})
+				.catch(function (error) {
+				  // handle error
+				  console.log(error);
+				})
+				.then(function () {
+				  // always executed
+				});
+		});
+		
+		btnPost.addEventListener("click", function (){
+			axios.post('employees', {
+				id: 'Fred',
+				pw: '0000'
+			})
+			.then(function (response) {
+				console.log(response);
+				return "Done";
+			})
+			.catch(function (error) {
+				console.log(error);
+			})
+			.then(function (what) {
+				console.log(what);
+			});
+		});
+	</script>
+	
+</body>
+</html>
