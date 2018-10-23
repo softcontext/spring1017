@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.EmpDao">
+
+<!-- 
+	public int insert(Emp emp);
+	public int update(Emp emp);
+	public int delete(int empno);
+ -->
+
+	<!-- insert/update/delete 수행결과인 영향받은 로우의 개수 값이 자동으로 리턴됩니다. -->
+	<insert id="insert" parameterType="com.example.demo.domain.Emp">
+		insert into emp(ename, job, sal) values(#{ename}, #{job}, #{sal})
+		<selectKey resultType="int" order="AFTER" keyProperty="empno">
+			select LAST_INSERT_ID() as empno
+		</selectKey>
+	</insert>
+
+	<update id="update" parameterType="com.example.demo.domain.Emp">
+		update emp set ename=#{ename}, job=#{job}, sal=#{sal} where empno=#{empno}
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		delete from emp where empno=#{empno}
+	</delete>
+
+<!-- 
+	public int count();
+	public Emp findOne(int empno);
+ -->
+
+	<select id="count" resultType="int">
+		select count(*) from emp
+	</select>
+
+	<select id="findOne" parameterType="int" resultType="com.example.demo.domain.Emp">
+		select * from emp where empno=#{empno}
+	</select>
+
+</mapper>
+
+
+
+
+

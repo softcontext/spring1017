@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  
+	jdbc.sqlonly    : Logs only SQL
+	jdbc.sqltiming  : Logs the SQL, post-execution, including timing execution statistics
+	jdbc.audit      : Logs ALL JDBC calls except for ResultSets
+	jdbc.resultset  : all calls to ResultSet objects are logged
+	jdbc.connection : Logs connection open and close events
+-->
+<configuration>
+	<!-- 
+		include로 추가한 base.xml은 console 어펜더가 포함되어 있는 설정 파일입니다.
+		어펜더를 직접 설정할 때는 defaults.xml을 include 해야 중복설정이 없게 됩니다.
+		https://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#howto-configure-logback-for-logging
+	 -->
+	<include resource="org/springframework/boot/logging/logback/defaultsxml"/>
+	
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<!-- By default, encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-3level %logger{5} -%msg %n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>c:/logs/spring/applicatoin.log</file>
+		<prudent>true</prudent>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>applicatoin.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<!-- 30일 지난 파일은 삭제한다. -->
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>INFO</level>
+		</filter>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} %-5level --- [%thread] %logger{35} : %msg %n</pattern>
+		</encoder>
+	</appender>
+	
+	<logger name="jdbc" level="OFF" />
+	<logger name="jdbc.sqlonly" level="DEBUG" additivity="false">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+	</logger>
+	<logger name="jdbc.resultsettable" level="DEBUG" additivity="false">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+	</logger>
+ 
+	<logger name="org.springframework.web" level="INFO"/>
+	<logger name="org.thymeleaf" level="INFO"/>
+	<logger name="org.quartz.core" level="INFO"/>
+	<logger name="org.h2.server.web" level="INFO"/>
+	
+	<!-- SQL 로그: 사용할 때는 spring.jpa.show-sql=false 로 설정 -->
+	<logger name="org.hibernate.SQL" level="INFO"/>
+	<!-- 파라미터와 결과 로그 -->
+	<!-- <logger name="org.hibernate.type" level="TRACE" /> -->
+	<!-- statistics -->
+	<!-- <logger name="org.hibernate.stat" level="DEBUG" /> -->
+	<!-- 과도한 로그 제외 -->
+	<!-- <logger name="org.hibernate.type.BasicTypeRegistry" level="WARN" /> -->
+	
+	<!-- <logger name="com.example.web.interceptor" level="WARN"/> -->
+
+	<!-- TRACE < DEBUG < INFO < WARN < ERROR -->
+	<root level="INFO">
+		<appender-ref ref="STDOUT" />
+		<!-- <appender-ref ref="FILE" /> -->
+	</root>
+</configuration>
